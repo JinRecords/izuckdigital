@@ -16,8 +16,10 @@
     <link rel="stylesheet" type="text/css" href="../css/all.min.css">
     <link rel="stylesheet" type="text/css" href="../css/ionicons.min.css">
     <link href='https://fonts.googleapis.com/css?family=Poppins:100,500,700,40&display=swap&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+      import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    </script>
     <title>Backlog</title>
 
     <!-- Styles for the popup and overlay -->
@@ -503,14 +505,11 @@
     firebase.initializeApp(firebaseConfig);
 
     document.querySelector('#popupForm form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    sendFormDataToFirebase();
+      e.preventDefault();
+      sendFormDataToFirebase();
     });
 
     function sendFormDataToFirebase() {
-      const db = firebase.database();
-      const ref = db.ref('productBacklog');
-
       const formData = {
         name: document.getElementById('name').value,
         description: document.getElementById('description').value,
@@ -523,11 +522,10 @@
         storypoint: document.getElementById('storypoint').value
       };
 
-      ref.push(formData)
+      push(productBacklogRef, formData)
         .then(() => {
           console.log('Data saved successfully');
-          togglePopup(); // Close the popup after successful submission
-          // You might want to clear the form or update the UI here
+          togglePopup();
         })
         .catch((error) => {
           console.error('Error saving data: ', error);
