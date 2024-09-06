@@ -487,57 +487,50 @@
         document.querySelector(`.pill-button.stage-${s.toLowerCase()}`).classList.add('selected');
         document.getElementById('stage-input').value = s;
     }
-</script>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDicFj4DUKZo2iYXZN8tUE2FcMLqmQ_cgU",
-    authDomain: "izuck-digital.firebaseapp.com",
-    databaseURL: "https://izuck-digital-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "izuck-digital",
-    storageBucket: "izuck-digital.appspot.com",
-    messagingSenderId: "875586622876",
-    appId: "1:875586622876:web:ba68da139cc5574f18e459",
-    measurementId: "G-43HJEK623G"
-  };
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDicFj4DUKZo2iYXZN8tUE2FcMLqmQ_cgU",
+      authDomain: "izuck-digital.firebaseapp.com",
+      databaseURL: "https://izuck-digital-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "izuck-digital",
+      storageBucket: "izuck-digital.appspot.com",
+      messagingSenderId: "875586622876",
+      appId: "1:875586622876:web:ba68da139cc5574f18e459",
+      measurementId: "G-43HJEK623G"
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+    firebase.initializeApp(firebaseConfig);
 
-  function sendToFirebase(data) {
-  const db = firebase.database();
-  const ref = db.ref('productBacklog');
+    document.querySelector('#popupForm form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    sendFormDataToFirebase();
+    });
 
-  data.forEach(item => {
-    if (item.Type === 'ProductBacklog' && item.Action === 'add') {
-      ref.push({
-        Title: item.Title,
-        Description: item.Description,
-        Tag: item.Tag,
-        Assignee: item.Assignee
-      });
+    function sendFormDataToFirebase() {
+      const db = firebase.database();
+      const ref = db.ref('productBacklog');
+
+      const formData = {
+        name: document.getElementById('name').value,
+        description: document.getElementById('description').value,
+        tags: tags,
+        assignee: document.getElementById('assignee').value,
+        priority: document.getElementById('priority-input').value,
+        sprint: document.getElementById('sprint-input').value,
+        status: document.getElementById('status-input').value,
+        stage: document.getElementById('stage-input').value,
+        storypoint: document.getElementById('storypoint').value
+      };
+
+      ref.push(formData)
+        .then(() => {
+          console.log('Data saved successfully');
+          togglePopup(); // Close the popup after successful submission
+          // You might want to clear the form or update the UI here
+        })
+        .catch((error) => {
+          console.error('Error saving data: ', error);
+        });
     }
-  });
-}
-const apiData = [
-  {
-    "Type": "ProductBacklog",
-    "Action": "add",
-    "Title": "Test1",
-    "Description": "testing",
-    "Tag": ["UI", "UX", "Framework"],
-    "Assignee": "test1"
-  },
-  // ... more data ...
-];
-
-sendToFirebase(apiData);
 </script>
